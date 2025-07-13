@@ -2,7 +2,7 @@ package com.meet.undoschool.dto;
 
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Data
 public class CourseQueryRequest {
@@ -13,8 +13,8 @@ public class CourseQueryRequest {
     private Integer maxAge;
     private Double minPrice;
     private Double maxPrice;
-    private LocalDateTime nextSessionFrom;
+    private ZonedDateTime nextSessionFrom;
     private String sort;
-    private final int page = 0;
-    private final int size = 10;
+    private int size = 10;
+    private int page = 0;
 }

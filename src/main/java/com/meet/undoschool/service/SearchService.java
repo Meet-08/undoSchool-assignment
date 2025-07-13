@@ -33,6 +33,7 @@ public class SearchService {
                 .withQuery(query)
                 .withSort(sorts)
                 .withPageable(page)
+                .withMaxResults(req.getSize())
                 .build();
 
         return elasticsearchOperations.search(nativeQuery, CourseDocument.class);
@@ -40,7 +41,7 @@ public class SearchService {
 
     private Query buildQuery(CourseQueryRequest req) {
         var bool = QueryBuilders.bool();
-        
+
         if (req.getQuery() != null && !req.getQuery().isBlank()) {
             bool.must(QueryBuilders.multiMatch(m -> m
                             .fields("title", "description")
@@ -74,7 +75,7 @@ public class SearchService {
 
         if (req.getNextSessionFrom() != null) {
             bool.filter(RangeQuery.of(r -> r
-                            .date(d -> d.field("nextSessionDate")
+                            .date(d -> d.field("nextSession")
                                     .gte(req.getNextSessionFrom().toString())
                             )
                     )
@@ -94,8 +95,8 @@ public class SearchService {
             bool.filter(RangeQuery.of(r -> r.number(
                                     nrq -> nrq
                                             .field(field)
-                                            .lte((Double) min)
-                                            .gte((Double) max)
+                                            .gte(min != null ? min.doubleValue() : null)
+                                            .lte(max != null ? max.doubleValue() : null)
                             )
                     )
             );
@@ -109,7 +110,7 @@ public class SearchService {
         } else if ("priceDesc".equalsIgnoreCase(sort)) {
             list.add(orderBy("price", SortOrder.Desc));
         } else {
-            list.add(orderBy("nextSessionDate", SortOrder.Asc)); // default
+            list.add(orderBy("nextSession", SortOrder.Asc)); // default
         }
         return list;
     }

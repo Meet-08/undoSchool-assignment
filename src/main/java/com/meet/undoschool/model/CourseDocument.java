@@ -1,19 +1,22 @@
 package com.meet.undoschool.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.meet.undoschool.enums.Type;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Document(indexName = "courses")
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CourseDocument {
 
     @Id
@@ -43,7 +46,7 @@ public class CourseDocument {
     @Field(type = FieldType.Double)
     private double price;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDateTime nextSession;
+    @Field(type = FieldType.Date)
+    private ZonedDateTime nextSession;
 
 }

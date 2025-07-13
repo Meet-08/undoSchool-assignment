@@ -1,15 +1,16 @@
 package com.meet.undoschool.controller;
 
 import com.meet.undoschool.dto.CourseQueryRequest;
-import com.meet.undoschool.model.CourseDocument;
+import com.meet.undoschool.dto.OutPutDto;
 import com.meet.undoschool.service.SearchService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @RestController
 @RequestMapping("/api")
@@ -18,7 +19,8 @@ public class SearchController {
 
     private final SearchService searchService;
 
-    public SearchHits<CourseDocument> search(
+    @GetMapping("/search")
+    public OutPutDto search(
             @RequestParam(value = "q", required = false) String query,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String type,
@@ -39,15 +41,28 @@ public class SearchController {
         request.setMaxAge(maxAge);
         request.setMinPrice(minPrice);
         request.setMaxPrice(maxPrice);
+        request.setPage(page);
+        request.setSize(size);
         request.setSort(sort);
 
         if (nextSessionFrom != null) {
             request.setNextSessionFrom(
-                    LocalDateTime.parse(nextSessionFrom)
+                    ZonedDateTime.parse(nextSessionFrom)
             );
         }
 
-        return searchService.search(request);
+        var hits = searchService.search(request);
+        var courses = hits.stream()
+                .map(SearchHit::getContent)
+                .toList();
+
+
+        OutPutDto outPutDto = new OutPutDto();
+
+        outPutDto.setTotalHits(courses.size());
+        outPutDto.setCourses(courses);
+
+        return outPutDto;
     }
 
 }

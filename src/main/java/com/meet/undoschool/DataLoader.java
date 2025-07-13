@@ -2,6 +2,8 @@ package com.meet.undoschool;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.meet.undoschool.model.CourseDocument;
 import com.meet.undoschool.repository.CourseDocumentRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +20,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DataLoader implements CommandLineRunner {
 
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     private final CourseDocumentRepository courseRepository;
 
     @Override
